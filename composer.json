@@ -1,0 +1,34 @@
+{
+    "name": "ke5vmj/mahlzeit",
+    "description": "PHP based Calorie Tracking application for self-hosted solutions",
+    "type": "project",
+    "require": {
+        "ext-phalcon": "^5.0",
+        "halaxa/json-machine": "dev-master",
+        "solarium/solarium": "6.x-dev",
+        "meilisearch/meilisearch-php": "dev-main",
+        "http-interop/http-factory-guzzle": "dev-master",
+        "guzzlehttp/guzzle": "7.11.x-dev"
+    },
+    "require-dev": {
+        "phalcon/devtools": "5.0.x-dev",
+        "phalcon/ide-stubs": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Mahlzeit\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Edward Radau"
+        }
+    ],
+    "minimum-stability": "dev",
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}

@@ -1,0 +1,65 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+use Dotenv\Dotenv;
+use Phalcon\Di\FactoryDefault\Cli as CliDI;
+use Phalcon\Cli\Console as ConsoleApp;
+use Phalcon\Cli\Dispatcher;
+use App\Providers\DatabaseProvider;
+
+define('BASE_PATH', dirname(__DIR__));
+define('APP_PATH', BASE_PATH . '/app');
+
+// 1. Load Autoloader
+require_once BASE_PATH . '/vendor/autoload.php';
+
+// 2. Load Environment Variables
+$dotenv = Dotenv::createImmutable(BASE_PATH);
+$dotenv->safeLoad();
+
+// 3. Initialize CLI Dependency Injector
+$di = new CliDI();
+
+// 4. Register Configuration
+$di->setShared('config', function () {
+    return include APP_PATH . '/config/config.php';
+});
+
+// 5. Reuse your existing Database Provider!
+$dbProvider = new DatabaseProvider();
+$dbProvider->register($di);
+
+$searchProvider = new \App\Providers\SearchProvider();
+$searchProvider->register($di);
+
+// 6. Set up the CLI Dispatcher
+$di->setShared('dispatcher', function () {
+    $dispatcher = new Dispatcher();
+    // Tell Phalcon where to look for CLI Tasks
+    $dispatcher->setDefaultNamespace('App\Tasks');
+    return $dispatcher;
+});
+
+// 7. Create the Console Application
+$console = new ConsoleApp($di);
+
+// 8. Parse Command Line Arguments
+$arguments = [];
+foreach ($argv as $k => $arg) {
+    if ($k === 1) {
+        $arguments['task'] = $arg;
+    } elseif ($k === 2) {
+        $arguments['action'] = $arg;
+    } elseif ($k >= 3) {
+        $arguments['params'][] = $arg;
+    }
+}
+
+// 9. Execute
+try {
+    $console->handle($arguments);
+} catch (\Exception $e) {
+    fwrite(STDERR, "Error: " . $e->getMessage() . PHP_EOL);
+    exit(1);
+}

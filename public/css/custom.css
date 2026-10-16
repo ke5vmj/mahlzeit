@@ -1,0 +1,3 @@
+/* Small tweak to make it feel more like an app on desktop */
+.app-container { max-width: 800px; margin: 0 auto; }
+.panel-heading { display: flex; justify-content: space-between; align-items: center; }

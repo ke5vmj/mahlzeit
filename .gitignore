@@ -1,0 +1,81 @@
+# =================not
+# Dependencies (Composer)
+# =================
+/vendor/
+# Note: Keep composer.lock tracked for applications,
+# but you can ignore it if you are developing a reusable Phalcon package/library.
+# composer.lock
+
+
+# =================
+# Phalcon Specific
+# =================
+# Phalcon DevTools project metadata
+/.phalcon/
+
+# Common framework cache and log directories
+/var/cache/
+/var/logs/
+/storage/cache/
+/storage/logs/
+/app/cache/
+/cache/
+/logs/
+
+
+# =================
+# Environment & Local Configs
+# =================
+# Sensitive environment files and local overrides
+.env
+.env.*
+!.env.example
+/app/config/config.local.php
+/app/config/development.php
+
+
+# =================
+# IDEs & Editors
+# =================
+# PhpStorm / JetBrains
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse / PDT
+.project
+.buildpath
+.settings/
+
+
+# =================
+# Operating System Files
+# =================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+
+# =================
+# Testing & Code Coverage
+# =================
+/build/
+/coverage/
+.phpunit.result.cache
+
+docker/ssl/*
+
+cache/*

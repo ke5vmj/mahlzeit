@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    env_file: .env
+    container_name: mahlzeit_php
+    ports:
+      - "80:80"
+      - 443:443
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - php-network
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+  mysql:
+    image: mysql:8.4
+    container_name: mahzleit_mysql
+    ports:
+      - "3306:3306"
+    env_file: .env
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - php-network
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: mahlzeit_phpmyadmin
+    ports:
+      - "8081:80"
+    env_file: .env
+    depends_on:
+      - mysql
+    networks:
+      - php-network
+    restart: unless-stopped
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: mahlzeit_meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      # This is required for basic security. Make sure this string
+      # matches the key you pass into your PHP Meilisearch\Client.
+      - MEILI_MASTER_KEY=d&6da24
+      - MEILI_ENV=development
+    volumes:
+      - meili_data:/meili_data
+    networks:
+      - php-network
+    restart: unless-stopped
+
+  memcached:
+    image: memcached:alpine   # official Alpine-based image
+    container_name: memcached
+    networks:
+      - php-network
+    ports:
+      - "11211:11211"
+    # Optional: set memory limit (in MB)
+    command: memcached -m 64
+
+#  oap:
+#    image: apache/skywalking-oap-server:9.7.0
+#    container_name: mahlzeit_oap
+#    ports:
+#      - "11800:11800" # Agent connection port
+#      - "12800:12800" # UI connection port
+#    environment:
+#      SW_HEALTH_CHECKER: default
+#      SW_TELEMETRY: prometheus
+#    networks:
+#      - php-network
+#    restart: unless-stopped
+#
+#  skywalking-ui:
+#    image: apache/skywalking-ui:9.7.0
+#    container_name: mahlzeit_skywalking_ui
+#    ports:
+#      - "8080:8080" # Access the dashboard here
+#    environment:
+#      SW_OAP_ADDRESS: http://oap:12800
+#    depends_on:
+#      - oap
+#    networks:
+#      - php-network
+#    restart: unless-stopped
+
+volumes:
+  mysql-data:
+    driver: local
+  meili_data:
+    driver: local
+networks:
+  php-network:
+    driver: bridge
